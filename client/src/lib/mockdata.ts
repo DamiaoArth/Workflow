@@ -10,12 +10,16 @@ export async function setupInitialData() {
       userId: 1
     });
     
+    // Format dates as ISO strings for proper serialization
+    const startDate = new Date();
+    const endDate = addDays(new Date(), 14);
+
     // Create sprint
     const sprint = await apiRequest("POST", "/api/sprints", {
       name: "Sprint 1",
       projectId: project.id,
-      startDate: new Date(),
-      endDate: addDays(new Date(), 14),
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
       status: "active"
     });
     
