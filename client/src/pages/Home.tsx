@@ -13,8 +13,7 @@ import { setupInitialData } from "@/lib/mockdata";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 
 export default function Home() {
-  const { mode, setMode, workTab, setWorkTab, agentSettingsOpen, setAgentSettingsOpen } = useModeState();
-  const [teamOverviewOpen, setTeamOverviewOpen] = useState(false);
+  const { mode, setMode, agentSettingsOpen, setAgentSettingsOpen } = useModeState();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const { currentProject, projects } = useProjects(currentProjectId);
   const [initialized, setInitialized] = useState(false);
@@ -171,50 +170,24 @@ export default function Home() {
                         Collaborate with AI agents to complete your tasks
                       </p>
                     </div>
-                    <button 
-                      className="bg-indigo-50 dark:bg-indigo-900 hover:bg-indigo-100 dark:hover:bg-indigo-800 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-md text-sm font-medium"
-                      onClick={() => setTeamOverviewOpen(true)}
-                    >
-                      <i className="fas fa-users-cog mr-2"></i>
-                      Team Overview
-                    </button>
+
                   </div>
                   
                   {/* Tabs for Work Mode */}
                   <div className="mt-4">
-                    <Tabs 
-                      defaultValue={workTab} 
-                      onValueChange={(value) => setWorkTab(value as "chat" | "coding")}
-                      className="w-full"
-                    >
-                      <TabsList className="grid w-[400px] grid-cols-2">
-                        <TabsTrigger value="chat" className="text-sm">
-                          <i className="fas fa-comment-dots mr-2"></i>Chat
-                        </TabsTrigger>
-                        <TabsTrigger value="coding" className="text-sm">
-                          <i className="fas fa-code mr-2"></i>Code Editor
-                        </TabsTrigger>
-                      </TabsList>
-                    </Tabs>
+                    {/* No longer using tabs - showing only Chat interface */}
                   </div>
                 </div>
                 
-                {/* Tab content */}
+                {/* Chat Interface */}
                 <div className="flex-1 h-[calc(100%-7rem)] overflow-hidden">
-                  {workTab === "chat" && <ChatInterface projectId={currentProjectId} />}
-                  {workTab === "coding" && <CodeEditor projectId={currentProjectId} />}
+                  <ChatInterface projectId={currentProjectId} />
                 </div>
               </div>
             </div>
           )}
           
-          {/* Team Overview Modal */}
-          {teamOverviewOpen && currentProjectId && (
-            <TeamOverview 
-              projectId={currentProjectId} 
-              onClose={() => setTeamOverviewOpen(false)} 
-            />
-          )}
+
           
           {/* Agent Settings Modal */}
           {agentSettingsOpen && currentProjectId && (
