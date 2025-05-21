@@ -203,6 +203,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(400).json({ message: "Invalid task data", error });
     }
   });
+  
+  app.delete("/api/tasks/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const task = await storage.getTask(id);
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      const success = await storage.deleteTask(id);
+      if (!success) {
+        return res.status(500).json({ message: "Failed to delete task" });
+      }
+      
+      // Log the deletion in agent logs
+      await storage.createAgentLog({
+        agentName: "System",
+        action: "Task deleted",
+        details: `Task "${task.title}" has been deleted by the user`,
+        projectId: task.projectId,
+        taskId: null // The task ID no longer exists
+      });
+      
+      broadcastUpdate('task_deleted', { id, projectId: task.projectId });
+      res.status(204).end();
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting task", error });
+    }
+  });
 
   // Agent Logs API
   app.get("/api/projects/:projectId/agent-logs", async (req, res) => {

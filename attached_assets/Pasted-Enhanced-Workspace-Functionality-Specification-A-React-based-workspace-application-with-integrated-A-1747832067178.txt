@@ -1,0 +1,79 @@
+Enhanced Workspace Functionality Specification
+A React-based workspace application with integrated AI agents designed to facilitate the planning, execution, and monitoring of personal projects through a fully automated Kanban system. The application features intelligent chat interactions, real-time task delegation, dynamic agent efficiency, and an extensible modular interface.
+
+🔑 Core Enhancements
+Manual Task Deletion: Tasks created manually via the Kanban board can now be removed directly, allowing for a cleaner and more flexible task management experience.
+
+Dynamic Agent Efficiency: Agent performance is evaluated based on real-time metrics (e.g., task success rate, average execution time, and reassignments), replacing static efficiency values with adaptive scoring mechanisms.
+
+Layout Fixes: Resolved the overlapping issue between the Personal App Project container and the navigation bar, ensuring proper layer separation and responsive design integrity.
+
+Dark Mode Support: Implemented a fully theme-aware interface with a dark mode toggle. Preferences persist via local storage and apply across all UI elements using Tailwind’s dark: utility classes.
+
+🧪 Work Mode Enhancements
+Sectioned View: Work mode is now split into two distinct sub-sections:
+
+Chat View: A conversational interface similar to ChatGPT or DeepSeek for general communication, prompt interaction, and assistance.
+
+Coding View: A full-featured, prompt-driven development environment where agents can:
+
+Generate and edit code snippets
+
+Build file structures
+
+Simulate or preview application logic
+
+Behaves similarly to tools like Codium, Replit, or Cline.
+
+Agent Settings Panel: Added a functional modal that allows users to configure:
+
+Assistants: Personality, model, prompt scope
+
+Agents: Roles, responsibilities, and tools
+
+Teams: Agent groupings for specific projects or sprints
+
+Also displays and allows editing of core runtime settings: session, memory, knowledge, tools, models, and MCP logic
+
+🧬 UI Extensions
+Assistants and Teams Management: Extended the interface to support listing and configuring Assistants and Teams alongside Agents. Each entity includes editable metadata, current status, performance insights, and interaction logs.
+
+🎨 Visual References & Style Guide
+Inspired by the aesthetics and UX of Linear, Jira, and ChatGPT:
+
+Colors:
+
+Primary: #2563EB (blue)
+
+Secondary: #3B82F6 (light blue)
+
+Background: #F9FAFB (off-white)
+
+Text: #111827 (near black)
+
+Accent: #6366F1 (indigo)
+
+Design System:
+
+Font: Inter / SF Pro Display
+
+Theme: Modern, minimalist, responsive
+
+Effects: Crisp shadows, rounded corners (8px)
+
+Layouts:
+
+Plan Mode: Two-column view (Kanban board + project/task detail)
+
+Work Mode: Single-column view (Chat or Coding environment)
+
+Modals and dashboards designed with Tailwind CSS grid and flex utilities
+
+⚙️ Technical Requirements
+Frontend: React with Tailwind CSS
+
+AI Agents: Agno Framework (GPT-4o-mini models via OpenRouter API)
+
+Data Persistence: LocalStorage for UI preferences, memory, and configuration states
+
+Optional Integration: n8n for Plan-mode automation workflows
