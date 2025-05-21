@@ -1,0 +1,98 @@
+🛠 Prompt: Workspace UI Refactor & Role-Based Agent Settings
+Enhance the current Work Mode interface of the React + Tailwind-based workspace application to better align with agent behavior and modular configuration logic. The focus is on clarifying the role of Agent Settings, expanding team/assistant visibility, and refining UI layout and interaction logic.
+
+📍Key UI Adjustments
+Reassign the Top-Right “Agent Settings” Button
+
+The current purple Agent Settings button (top-right) should no longer open the model/tools configuration.
+
+Update its role to a new function such as:
+
+Team Overview
+
+Agent Dashboard
+
+Project AI Hub
+
+This will serve as a high-level view of team status, agent allocation, sprint overviews, etc.
+
+Preserve and Expand the Bottom “Agent Settings” Button
+
+The Agent Settings button located below the chat input becomes the main access point for configuring:
+
+AI model (GPT-4o-mini, etc.)
+
+Tool access
+
+MCP installation/enabling
+
+Memory/session/knowledge settings
+
+Clicking this opens a modal with full configuration control for assistants, agents, and teams.
+
+🧠 Behavior Switch Between Chat & Coding
+The Chat ↔ Code Editor toggle should not switch between a text interface and an IDE.
+
+Instead, it should change the operational mode of the active agent:
+
+Chat: normal conversational behavior (like ChatGPT).
+
+Code: agent executes code-related tasks:
+
+Builds directory structure
+
+Writes scripts
+
+Interprets system-level actions
+
+Behaves like Codium, Replit, or AutoDev tools
+
+📦 UI and Layout Improvements
+Expand Chat Output Area
+
+Increase the height and max-lines of the agent's message output.
+
+Allow scrollable history with subtle shadows or overflow indicators.
+
+Pin Input Controls to the Bottom
+
+The input bar, including:
+
+Text input field
+
+Send button
+
+Voice input
+
+Code view toggle
+
+Agent settings (bottom version)
+
+Should be anchored to the bottom of the page for consistent UX.
+
+👥 Team & Assistant Visibility
+Add New UI Sections Below Sprints
+
+Create new labeled sections in the main interface for:
+
+Assistants: display currently available assistant roles and their configurations.
+
+Teams: list all active agent teams, their roles, members, and current status.
+
+Each entry should support:
+
+Inline editing or modal popups for config
+
+Status indicators (online, executing, idle)
+
+Model and session info
+
+📘 Summary of Changes
+Section	Action
+Top-right Agent Settings Button	Change function to “Team Overview” or similar
+Bottom Agent Settings Button	Full modal config for agents, models, tools, MCP, session, memory
+Chat/Code Toggle	Switch agent behavior, not UI. No compiler view required
+Input Bar	Stick to bottom, compact and unified control layout
+Chat Output	Increase vertical space, allow overflow scroll
+Under Sprint Panel	Add Assistants and Teams sections with full agent visibility
+

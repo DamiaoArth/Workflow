@@ -6,6 +6,7 @@ import Dashboard from "@/components/Dashboard";
 import ChatInterface from "@/components/ChatInterface";
 import CodeEditor from "@/components/CodeEditor";
 import AgentSettings from "@/components/AgentSettings";
+import TeamOverview from "@/components/TeamOverview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModeState } from "@/hooks/useModeState";
 import { useProjects } from "@/hooks/useProjects";
@@ -16,6 +17,7 @@ import { ThemeProvider } from "@/components/ui/ThemeProvider";
 
 export default function Home() {
   const { mode, setMode, workTab, setWorkTab, agentSettingsOpen, setAgentSettingsOpen } = useModeState();
+  const [teamOverviewOpen, setTeamOverviewOpen] = useState(false);
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const { currentProject, projects } = useProjects(currentProjectId);
   const [initialized, setInitialized] = useState(false);
@@ -47,6 +49,23 @@ export default function Home() {
     
     initApp();
   }, [initialized]);
+  
+  // Listen for the agent settings event from the ChatInterface
+  useEffect(() => {
+    const handleAgentSettings = (event: any) => {
+      // Make sure the projectId matches our current project
+      if (event.detail?.projectId === currentProjectId) {
+        setAgentSettingsOpen(true);
+      }
+    };
+    
+    window.addEventListener('openAgentSettings', handleAgentSettings);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('openAgentSettings', handleAgentSettings);
+    };
+  }, [currentProjectId, setAgentSettingsOpen]);
 
   // Handle project selection
   const handleProjectSelect = (projectId: number) => {
@@ -157,10 +176,10 @@ export default function Home() {
                     </div>
                     <button 
                       className="bg-indigo-50 dark:bg-indigo-900 hover:bg-indigo-100 dark:hover:bg-indigo-800 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-md text-sm font-medium"
-                      onClick={() => setAgentSettingsOpen(true)}
+                      onClick={() => setTeamOverviewOpen(true)}
                     >
-                      <i className="fas fa-robot mr-2"></i>
-                      Agent Settings
+                      <i className="fas fa-users-cog mr-2"></i>
+                      Team Overview
                     </button>
                   </div>
                   
@@ -190,6 +209,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          )}
+          
+          {/* Team Overview Modal */}
+          {teamOverviewOpen && currentProjectId && (
+            <TeamOverview 
+              projectId={currentProjectId} 
+              onClose={() => setTeamOverviewOpen(false)} 
+            />
           )}
           
           {/* Agent Settings Modal */}
