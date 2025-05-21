@@ -104,27 +104,27 @@ export default function Home() {
           {/* Plan mode */}
           {mode === "plan" && currentProjectId && (
             <div id="plan-mode" className="h-full">
-              <div className="px-4 py-4 flex items-center justify-between border-b border-gray-200 bg-white sticky top-0 z-10">
+              <div className="px-4 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10">
                 <div>
-                  <h1 className="text-xl font-semibold">{currentProject?.name || "Project"}</h1>
-                  <p className="text-sm text-gray-500">
+                  <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{currentProject?.name || "Project"}</h1>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {currentProject?.description || "Project description"}
                   </p>
                 </div>
                 <div className="flex space-x-2">
                   <div className="flex rounded-md shadow-sm">
-                    <button className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 text-sm font-medium rounded-l-md hover:bg-gray-50">
+                    <button className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm font-medium rounded-l-md hover:bg-gray-50 dark:hover:bg-gray-700">
                       <i className="fas fa-calendar mr-2"></i>Sprints
                     </button>
-                    <button className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 text-sm font-medium border-l-0 hover:bg-gray-50">
+                    <button className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm font-medium border-l-0 hover:bg-gray-50 dark:hover:bg-gray-700">
                       <i className="fas fa-chart-line mr-2"></i>Analytics
                     </button>
-                    <button className="bg-white border border-gray-300 text-gray-700 px-3 py-1.5 text-sm font-medium rounded-r-md border-l-0 hover:bg-gray-50">
+                    <button className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 text-sm font-medium rounded-r-md border-l-0 hover:bg-gray-50 dark:hover:bg-gray-700">
                       <i className="fas fa-list-check mr-2"></i>Tasks
                     </button>
                   </div>
                   <button 
-                    className="bg-primary text-white px-4 py-1.5 text-sm font-medium rounded-md hover:bg-blue-700 flex items-center"
+                    className="bg-primary hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-1.5 text-sm font-medium rounded-md flex items-center"
                     onClick={handleAddTask}
                   >
                     <i className="fas fa-plus mr-2"></i>New Task
