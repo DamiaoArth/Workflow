@@ -1,3 +1,5 @@
+import { db } from "./db";
+import { eq, and, desc, asc } from "drizzle-orm";
 import {
   users, type User, type InsertUser,
   projects, type Project, type InsertProject,
@@ -44,162 +46,137 @@ export interface IStorage {
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private projects: Map<number, Project>;
-  private sprints: Map<number, Sprint>;
-  private tasks: Map<number, Task>;
-  private agentLogs: Map<number, AgentLog>;
-  private chatMessages: Map<number, ChatMessage>;
-  
-  private userIdCounter: number;
-  private projectIdCounter: number;
-  private sprintIdCounter: number;
-  private taskIdCounter: number;
-  private agentLogIdCounter: number;
-  private chatMessageIdCounter: number;
-
-  constructor() {
-    this.users = new Map();
-    this.projects = new Map();
-    this.sprints = new Map();
-    this.tasks = new Map();
-    this.agentLogs = new Map();
-    this.chatMessages = new Map();
-    
-    this.userIdCounter = 1;
-    this.projectIdCounter = 1;
-    this.sprintIdCounter = 1;
-    this.taskIdCounter = 1;
-    this.agentLogIdCounter = 1;
-    this.chatMessageIdCounter = 1;
-    
-    // Initialize with a default user
-    this.createUser({
-      username: "demo",
-      password: "password"
-    });
+export class DatabaseStorage implements IStorage {
+  // We'll initialize a default user on first use if needed
+  private async ensureDefaultUser() {
+    const existingUser = await this.getUserByUsername("demo");
+    if (!existingUser) {
+      await this.createUser({
+        username: "demo",
+        password: "password"
+      });
+    }
   }
 
   // User operations
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    await this.ensureDefaultUser();
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userIdCounter++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
   // Project operations
   async getProjects(userId?: number): Promise<Project[]> {
-    const projects = Array.from(this.projects.values());
+    await this.ensureDefaultUser();
     if (userId) {
-      return projects.filter(project => project.userId === userId);
+      return await db.select().from(projects).where(eq(projects.userId, userId));
     }
-    return projects;
+    return await db.select().from(projects);
   }
 
   async getProject(id: number): Promise<Project | undefined> {
-    return this.projects.get(id);
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project;
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
-    const id = this.projectIdCounter++;
     const now = new Date();
-    const project: Project = { 
-      ...insertProject, 
-      id, 
+    const projectData = {
+      ...insertProject,
       description: insertProject.description || null,
       userId: insertProject.userId || null,
       currentSprintId: null,
       createdAt: now
     };
-    this.projects.set(id, project);
+    
+    const [project] = await db.insert(projects).values(projectData).returning();
     return project;
   }
 
   async updateProject(id: number, projectUpdate: Partial<Project>): Promise<Project | undefined> {
-    const project = this.projects.get(id);
-    if (!project) return undefined;
+    const [updatedProject] = await db
+      .update(projects)
+      .set(projectUpdate)
+      .where(eq(projects.id, id))
+      .returning();
     
-    const updatedProject = { ...project, ...projectUpdate };
-    this.projects.set(id, updatedProject);
     return updatedProject;
   }
 
   async deleteProject(id: number): Promise<boolean> {
-    return this.projects.delete(id);
+    await db.delete(projects).where(eq(projects.id, id));
+    return true; // In PostgreSQL with Drizzle, we'll assume success if no exception is thrown
   }
 
   // Sprint operations
   async getSprints(projectId: number): Promise<Sprint[]> {
-    return Array.from(this.sprints.values()).filter(
-      sprint => sprint.projectId === projectId
-    );
+    return await db.select().from(sprints).where(eq(sprints.projectId, projectId));
   }
 
   async getSprint(id: number): Promise<Sprint | undefined> {
-    return this.sprints.get(id);
+    const [sprint] = await db.select().from(sprints).where(eq(sprints.id, id));
+    return sprint;
   }
 
   async createSprint(insertSprint: InsertSprint): Promise<Sprint> {
-    const id = this.sprintIdCounter++;
-    const sprint: Sprint = { 
-      ...insertSprint, 
-      id,
+    const sprintData = {
+      ...insertSprint,
       status: insertSprint.status || null,
       startDate: insertSprint.startDate || null,
       endDate: insertSprint.endDate || null
     };
-    this.sprints.set(id, sprint);
+    
+    const [sprint] = await db.insert(sprints).values(sprintData).returning();
     return sprint;
   }
 
   async updateSprint(id: number, sprintUpdate: Partial<Sprint>): Promise<Sprint | undefined> {
-    const sprint = this.sprints.get(id);
-    if (!sprint) return undefined;
+    const [updatedSprint] = await db
+      .update(sprints)
+      .set(sprintUpdate)
+      .where(eq(sprints.id, id))
+      .returning();
     
-    const updatedSprint = { ...sprint, ...sprintUpdate };
-    this.sprints.set(id, updatedSprint);
     return updatedSprint;
   }
 
   async deleteSprint(id: number): Promise<boolean> {
-    return this.sprints.delete(id);
+    await db.delete(sprints).where(eq(sprints.id, id));
+    return true; // In PostgreSQL with Drizzle, we'll assume success if no exception is thrown
   }
 
   // Task operations
   async getTasks(projectId: number, sprintId?: number): Promise<Task[]> {
-    const projectTasks = Array.from(this.tasks.values()).filter(
-      task => task.projectId === projectId
-    );
-    
     if (sprintId) {
-      return projectTasks.filter(task => task.sprintId === sprintId);
+      return await db.select().from(tasks).where(
+        and(
+          eq(tasks.projectId, projectId),
+          eq(tasks.sprintId, sprintId)
+        )
+      );
     }
-    
-    return projectTasks;
+    return await db.select().from(tasks).where(eq(tasks.projectId, projectId));
   }
 
   async getTask(id: number): Promise<Task | undefined> {
-    return this.tasks.get(id);
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    return task;
   }
 
   async createTask(insertTask: InsertTask): Promise<Task> {
-    const id = this.taskIdCounter++;
     const now = new Date();
-    const task: Task = { 
-      ...insertTask, 
-      id, 
+    const taskData = {
+      ...insertTask,
       description: insertTask.description || null,
       type: insertTask.type || null,
       status: insertTask.status || null,
@@ -210,69 +187,64 @@ export class MemStorage implements IStorage {
       dueDate: insertTask.dueDate || null,
       createdAt: now
     };
-    this.tasks.set(id, task);
+    
+    const [task] = await db.insert(tasks).values(taskData).returning();
     return task;
   }
 
   async updateTask(id: number, taskUpdate: Partial<Task>): Promise<Task | undefined> {
-    const task = this.tasks.get(id);
-    if (!task) return undefined;
+    const [updatedTask] = await db
+      .update(tasks)
+      .set(taskUpdate)
+      .where(eq(tasks.id, id))
+      .returning();
     
-    const updatedTask = { ...task, ...taskUpdate };
-    this.tasks.set(id, updatedTask);
     return updatedTask;
   }
 
   async deleteTask(id: number): Promise<boolean> {
-    return this.tasks.delete(id);
+    await db.delete(tasks).where(eq(tasks.id, id));
+    return true; // In PostgreSQL with Drizzle, we'll assume success if no exception is thrown
   }
 
   // Agent log operations
   async getAgentLogs(projectId: number): Promise<AgentLog[]> {
-    return Array.from(this.agentLogs.values())
-      .filter(log => log.projectId === projectId)
-      .sort((a, b) => {
-        if (!a.timestamp || !b.timestamp) return 0;
-        return b.timestamp.getTime() - a.timestamp.getTime();
-      });
+    return await db.select().from(agentLogs)
+      .where(eq(agentLogs.projectId, projectId))
+      .orderBy(desc(agentLogs.timestamp));
   }
 
   async createAgentLog(insertLog: InsertAgentLog): Promise<AgentLog> {
-    const id = this.agentLogIdCounter++;
     const now = new Date();
-    const log: AgentLog = { 
-      ...insertLog, 
-      id, 
+    const logData = {
+      ...insertLog,
       details: insertLog.details || null,
       taskId: insertLog.taskId || null,
       timestamp: now
     };
-    this.agentLogs.set(id, log);
+    
+    const [log] = await db.insert(agentLogs).values(logData).returning();
     return log;
   }
 
   // Chat operations
   async getChatMessages(projectId: number): Promise<ChatMessage[]> {
-    return Array.from(this.chatMessages.values())
-      .filter(message => message.projectId === projectId)
-      .sort((a, b) => {
-        if (!a.timestamp || !b.timestamp) return 0;
-        return a.timestamp.getTime() - b.timestamp.getTime();
-      });
+    return await db.select().from(chatMessages)
+      .where(eq(chatMessages.projectId, projectId))
+      .orderBy(asc(chatMessages.timestamp));
   }
 
   async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
-    const id = this.chatMessageIdCounter++;
     const now = new Date();
-    const message: ChatMessage = { 
-      ...insertMessage, 
-      id, 
+    const messageData = {
+      ...insertMessage,
       timestamp: now,
       metadata: insertMessage.metadata || null
     };
-    this.chatMessages.set(id, message);
+    
+    const [message] = await db.insert(chatMessages).values(messageData).returning();
     return message;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
