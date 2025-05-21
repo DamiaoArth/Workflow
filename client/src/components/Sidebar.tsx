@@ -82,6 +82,38 @@ export default function Sidebar({ currentProject, onProjectSelect, className = "
             )}
           </div>
         </div>
+        
+        <div className="mt-8">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">ASSISTANTS</h3>
+          <div className="space-y-1">
+            <div className="flex items-center py-2 px-3 text-gray-700 text-sm">
+              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+              CodeHelper
+              <span className="text-xs text-gray-500 ml-2">(GPT-4o-mini)</span>
+            </div>
+            <div className="flex items-center py-2 px-3 text-gray-700 text-sm">
+              <div className="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
+              PlannerGPT
+              <span className="text-xs text-gray-500 ml-2">(GPT-4)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-8">
+          <h3 className="text-sm font-medium text-gray-500 mb-3">TEAMS</h3>
+          <div className="space-y-1">
+            <div className="flex items-center py-2 px-3 text-gray-700 text-sm">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+              Frontend Team
+              <span className="text-xs bg-blue-100 ml-2 px-1.5 rounded">2</span>
+            </div>
+            <div className="flex items-center py-2 px-3 text-gray-700 text-sm">
+              <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+              Backend Team
+              <span className="text-xs bg-blue-100 ml-2 px-1.5 rounded">2</span>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
   );

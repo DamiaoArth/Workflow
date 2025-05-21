@@ -233,19 +233,15 @@ export default function ChatInterface({ projectId }: ChatInterfaceProps) {
         </div>
         
         {/* Bottom controls that serve as the main area for agent interaction modes */}
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-            <button className="mr-4 hover:text-primary dark:hover:text-blue-400 flex items-center">
-              <i className="fas fa-microphone mr-1"></i> Voice
-            </button>
-            <button className="hover:text-primary dark:hover:text-blue-400 flex items-center">
-              <i className="fas fa-code mr-1"></i> Code Mode
-            </button>
-          </div>
-          
-          {/* Agent Settings button for configuration */}
+        <div className="flex items-center mt-2 text-sm text-gray-500 dark:text-gray-400">
+          <button className="mr-4 hover:text-primary dark:hover:text-blue-400">
+            <i className="fas fa-microphone mr-1"></i> Voice Input
+          </button>
+          <button className="mr-4 hover:text-primary dark:hover:text-blue-400">
+            <i className="fas fa-code mr-1"></i> Code Mode
+          </button>
           <button 
-            className="flex items-center bg-indigo-50 dark:bg-indigo-900 hover:bg-indigo-100 dark:hover:bg-indigo-800 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-md text-sm font-medium"
+            className="hover:text-primary dark:hover:text-blue-400"
             onClick={() => {
               if (typeof window !== 'undefined') {
                 // Dispatch a custom event to notify parent component
@@ -254,8 +250,7 @@ export default function ChatInterface({ projectId }: ChatInterfaceProps) {
               }
             }}
           >
-            <i className="fas fa-robot mr-2"></i>
-            Agent Settings
+            <i className="fas fa-cog mr-1"></i> Agent Settings
           </button>
         </div>
       </div>
