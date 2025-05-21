@@ -4,14 +4,18 @@ import Sidebar from "@/components/Sidebar";
 import KanbanBoard from "@/components/KanbanBoard";
 import Dashboard from "@/components/Dashboard";
 import ChatInterface from "@/components/ChatInterface";
+import CodeEditor from "@/components/CodeEditor";
+import AgentSettings from "@/components/AgentSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useModeState } from "@/hooks/useModeState";
 import { useProjects } from "@/hooks/useProjects";
 import { apiRequest } from "@/lib/queryClient";
 import { queryClient } from "@/lib/queryClient";
 import { setupInitialData } from "@/lib/mockdata";
+import { ThemeProvider } from "@/components/ui/ThemeProvider";
 
 export default function Home() {
-  const { mode, setMode } = useModeState();
+  const { mode, setMode, workTab, setWorkTab, agentSettingsOpen, setAgentSettingsOpen } = useModeState();
   const [currentProjectId, setCurrentProjectId] = useState<number | null>(null);
   const { currentProject, projects } = useProjects(currentProjectId);
   const [initialized, setInitialized] = useState(false);
@@ -141,14 +145,59 @@ export default function Home() {
           {mode === "work" && currentProjectId && (
             <div id="work-mode" className="h-full">
               <div className="flex flex-col h-full">
-                <div className="bg-white border-b border-gray-200 px-4 py-4">
-                  <h1 className="text-xl font-semibold">{currentProject?.name || "Project"} - Work Mode</h1>
-                  <p className="text-sm text-gray-500">Direct chat interaction with AI Agents</p>
+                <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                        {currentProject?.name || "Project"} - Work Mode
+                      </h1>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Collaborate with AI agents to complete your tasks
+                      </p>
+                    </div>
+                    <button 
+                      className="bg-indigo-50 dark:bg-indigo-900 hover:bg-indigo-100 dark:hover:bg-indigo-800 text-indigo-600 dark:text-indigo-300 px-3 py-1.5 rounded-md text-sm font-medium"
+                      onClick={() => setAgentSettingsOpen(true)}
+                    >
+                      <i className="fas fa-robot mr-2"></i>
+                      Agent Settings
+                    </button>
+                  </div>
+                  
+                  {/* Tabs for Work Mode */}
+                  <div className="mt-4">
+                    <Tabs 
+                      defaultValue={workTab} 
+                      onValueChange={(value) => setWorkTab(value as "chat" | "coding")}
+                      className="w-full"
+                    >
+                      <TabsList className="grid w-[400px] grid-cols-2">
+                        <TabsTrigger value="chat" className="text-sm">
+                          <i className="fas fa-comment-dots mr-2"></i>Chat
+                        </TabsTrigger>
+                        <TabsTrigger value="coding" className="text-sm">
+                          <i className="fas fa-code mr-2"></i>Code Editor
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
                 </div>
                 
-                <ChatInterface projectId={currentProjectId} />
+                {/* Tab content */}
+                <div className="flex-1 h-[calc(100%-7rem)] overflow-hidden">
+                  {workTab === "chat" && <ChatInterface projectId={currentProjectId} />}
+                  {workTab === "coding" && <CodeEditor projectId={currentProjectId} />}
+                </div>
               </div>
             </div>
+          )}
+          
+          {/* Agent Settings Modal */}
+          {agentSettingsOpen && currentProjectId && (
+            <AgentSettings 
+              projectId={currentProjectId} 
+              onClose={() => setAgentSettingsOpen(false)} 
+            />
           )}
           
           {/* No project selected */}
