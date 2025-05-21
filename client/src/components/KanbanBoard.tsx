@@ -106,10 +106,14 @@ export default function KanbanBoard({ projectId, sprintId }: KanbanBoardProps) {
       });
       
       // Create agent action log
+      const agent = getAgentForColumn(columnId, task) || "System";
+      const action = `Task moved from ${formatColumnName(task.status)} to ${formatColumnName(columnId)}`;
+      const details = `Updated status for task "${task.title}"`;
+      
       await generateAgentActionLog(
-        getAgentForColumn(columnId, task) || "System", 
-        `Task moved from ${formatColumnName(task.status)} to ${formatColumnName(columnId)}`,
-        `Updated status for task "${task.title}"`,
+        agent,
+        action,
+        details,
         task.id
       );
       
